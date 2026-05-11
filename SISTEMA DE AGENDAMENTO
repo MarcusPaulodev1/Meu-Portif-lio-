@@ -1,0 +1,381 @@
+# ============================================================
+# 💈🎓 CHATBOT WHATSAPP COMPLETO — BARBER ACADEMY
+# ============================================================
+#
+# SISTEMA COMPLETO:
+#
+# ✅ Atendimento automático
+# ✅ Menu interativo
+# ✅ Agendamento automático
+# ✅ Integração Google Calendar
+# ✅ Lembrete automático
+# ✅ Cursos
+# ✅ Tabela de preços
+# ✅ Telefone da barbearia
+# ✅ Opção de voltar ao menu
+#
+# ============================================================
+
+# ============================================================
+# 📦 IMPORTAÇÕES
+# ============================================================
+
+from flask import Flask, request
+import requests
+from datetime import datetime, timedelta
+import threading
+import time
+
+# ============================================================
+# 📅 GOOGLE CALENDAR
+# ============================================================
+
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+
+# ============================================================
+# 🚀 INICIALIZAÇÃO
+# ============================================================
+
+app = Flask(__name__)
+
+# ============================================================
+# 🔑 CONFIGURAÇÕES WHATSAPP
+# ============================================================
+
+TOKEN_DE_ACESSO = "SEU_TOKEN"
+
+ID_NUMERO = "SEU_PHONE_ID"
+
+URL_API = f"https://graph.facebook.com/v18.0/{ID_NUMERO}/messages"
+
+cabecalhos = {
+    "Authorization": f"Bearer {TOKEN_DE_ACESSO}",
+    "Content-Type": "application/json"
+}
+
+# ============================================================
+# 🔑 CONFIGURAÇÕES GOOGLE CALENDAR
+# ============================================================
+
+ARQUIVO_CREDENCIAIS = "credenciais.json"
+
+SCOPES = ['https://www.googleapis.com/auth/calendar']
+
+credenciais = service_account.Credentials.from_service_account_file(
+    ARQUIVO_CREDENCIAIS,
+    scopes=SCOPES
+)
+
+servico_calendario = build(
+    'calendar',
+    'v3',
+    credentials=credenciais
+)
+
+ID_CALENDARIO = "primary"
+
+# ============================================================
+# 📲 FUNÇÃO ENVIAR MENSAGEM
+# ============================================================
+
+def enviar_mensagem(numero, mensagem):
+
+    corpo = {
+        "messaging_product": "whatsapp",
+        "to": numero,
+        "type": "text",
+        "text": {
+            "body": mensagem
+        }
+    }
+
+    resposta = requests.post(
+        URL_API,
+        headers=cabecalhos,
+        json=corpo
+    )
+
+    print("Mensagem enviada:")
+    print(resposta.text)
+
+# ============================================================
+# 📅 FUNÇÃO CRIAR AGENDAMENTO
+# ============================================================
+
+def criar_agendamento(
+    nome_cliente,
+    servico,
+    data_inicio,
+    data_fim
+):
+
+    evento = {
+
+        'summary': f'{servico} - {nome_cliente}',
+
+        'description': (
+            f'Cliente: {nome_cliente}\n'
+            f'Serviço: {servico}'
+        ),
+
+        'start': {
+            'dateTime': data_inicio,
+            'timeZone': 'America/Sao_Paulo',
+        },
+
+        'end': {
+            'dateTime': data_fim,
+            'timeZone': 'America/Sao_Paulo',
+        },
+    }
+
+    evento_criado = servico_calendario.events().insert(
+        calendarId=ID_CALENDARIO,
+        body=evento
+    ).execute()
+
+    print("Evento criado:")
+    print(evento_criado.get('htmlLink'))
+
+# ============================================================
+# ⏰ SISTEMA DE LEMBRETE
+# ============================================================
+
+def enviar_lembrete(
+    numero_cliente,
+    horario_agendamento,
+    servico
+):
+
+    horario = datetime.strptime(
+        horario_agendamento,
+        "%Y-%m-%d %H:%M:%S"
+    )
+
+    horario_lembrete = horario - timedelta(minutes=30)
+
+    segundos_espera = (
+        horario_lembrete - datetime.now()
+    ).total_seconds()
+
+    if segundos_espera > 0:
+
+        print("Aguardando horário do lembrete...")
+
+        time.sleep(segundos_espera)
+
+    mensagem = (
+        "⏰ Lembrete do seu agendamento!\n\n"
+
+        f"💈 Serviço: {servico}\n"
+
+        f"🕒 Horário: {horario.strftime('%d/%m/%Y às %H:%M')}\n\n"
+
+        "📍 Barber Academy\n"
+        "Belo Horizonte - MG\n\n"
+
+        "Aguardamos você ✂️🔥"
+    )
+
+    enviar_mensagem(numero_cliente, mensagem)
+
+# ============================================================
+# 🔥 WEBHOOK PRINCIPAL
+# ============================================================
+
+@app.route("/webhook", methods=["POST"])
+def webhook():
+
+    dados = request.json
+
+    try:
+
+        mensagem = dados["entry"][0]["changes"][0]["value"]["messages"][0]
+
+        numero_cliente = mensagem["from"]
+
+        texto = mensagem["text"]["body"].lower()
+
+        # ====================================================
+        # 👋 MENU PRINCIPAL
+        # ====================================================
+
+        if texto in [
+            "oi",
+            "olá",
+            "ola",
+            "menu",
+            "0",
+            "voltar",
+            "inicio",
+            "início"
+        ]:
+
+            resposta = (
+                "👋 Bem-vindo à Barber Academy ✂️\n\n"
+
+                "Escolha uma opção:\n\n"
+
+                "1️⃣ Agendar corte\n"
+                "2️⃣ Conhecer cursos\n"
+                "3️⃣ Ver preços\n"
+                "4️⃣ Falar com atendente\n"
+                "5️⃣ Endereço e horário\n\n"
+
+                "🔙 Digite 0 para voltar ao menu"
+            )
+
+        # ====================================================
+        # 💈 AGENDAR CORTE
+        # ====================================================
+
+        elif texto == "1":
+
+            inicio = "2026-05-10T14:00:00"
+
+            fim = "2026-05-10T15:00:00"
+
+            criar_agendamento(
+                nome_cliente="Cliente WhatsApp",
+                servico="Corte Masculino",
+                data_inicio=inicio,
+                data_fim=fim
+            )
+
+            horario_lembrete = "2026-05-10 14:00:00"
+
+            thread_lembrete = threading.Thread(
+                target=enviar_lembrete,
+                args=(
+                    numero_cliente,
+                    horario_lembrete,
+                    "Corte Masculino"
+                )
+            )
+
+            thread_lembrete.start()
+
+            resposta = (
+                "✅ Agendamento realizado!\n\n"
+
+                "💈 Serviço: Corte Masculino\n"
+                "🕒 Horário: 10/05/2026 às 14h\n\n"
+
+                "⏰ Você receberá um lembrete automático antes do horário.\n\n"
+
+                "🔙 Digite 0 para voltar ao menu."
+            )
+
+        # ====================================================
+        # 🎓 CURSOS
+        # ====================================================
+
+        elif texto == "2":
+
+            resposta = (
+                "🎓 Cursos disponíveis:\n\n"
+
+                "1️⃣ Barbeiro iniciante\n"
+                "2️⃣ Fade avançado\n"
+                "3️⃣ Pigmentação\n"
+                "4️⃣ Design de barba\n\n"
+
+                "🔙 Digite 0 para voltar"
+            )
+
+        # ====================================================
+        # 💲 PREÇOS
+        # ====================================================
+
+        elif texto == "3":
+
+            resposta = (
+                "💲 Tabela de preços:\n\n"
+
+                "✂️ Corte: R$35\n"
+                "🧔 Barba: R$25\n"
+                "🔥 Combo: R$50\n"
+                "⭐ Premium: R$70\n\n"
+
+                "🔙 Digite 0 para voltar"
+            )
+
+        # ====================================================
+        # 📞 ATENDENTE
+        # ====================================================
+
+        elif texto == "4":
+
+            resposta = (
+                "📞 Atendimento Barber Academy\n\n"
+
+                "Um atendente falará com você em breve.\n\n"
+
+                "☎️ Telefone:\n"
+                "(31) 99999-9999\n\n"
+
+                "📲 WhatsApp:\n"
+                "https://wa.me/5531999999999\n\n"
+
+                "🕒 Atendimento:\n"
+                "Segunda a sábado\n"
+                "09h às 20h\n\n"
+
+                "🔙 Digite 0 para voltar"
+            )
+
+        # ====================================================
+        # 📍 ENDEREÇO
+        # ====================================================
+
+        elif texto == "5":
+
+            resposta = (
+                "📍 Barber Academy\n"
+                "Belo Horizonte - MG\n\n"
+
+                "🕒 Funcionamento:\n"
+                "Segunda a sábado\n"
+                "09h às 20h\n\n"
+
+                "🔙 Digite 0 para voltar"
+            )
+
+        # ====================================================
+        # ❌ OPÇÃO INVÁLIDA
+        # ====================================================
+
+        else:
+
+            resposta = (
+                "❌ Não entendi.\n\n"
+
+                "Digite:\n"
+                "🔹 oi\n"
+                "🔹 menu\n"
+                "🔹 0\n\n"
+
+                "Para voltar ao menu."
+            )
+
+        # ====================================================
+        # 📲 ENVIAR RESPOSTA
+        # ====================================================
+
+        enviar_mensagem(numero_cliente, resposta)
+
+    except Exception as erro:
+
+        print("Erro encontrado:")
+        print(erro)
+
+    return "ok", 200
+
+# ============================================================
+# 🚀 EXECUTAR SERVIDOR
+# ============================================================
+
+if __name__ == "__main__":
+
+    app.run(port=5000)
