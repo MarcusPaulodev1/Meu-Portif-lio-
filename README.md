@@ -1,307 +1,101 @@
-# 💈 Barber Academy — Intelligent WhatsApp Scheduling System
+# 💻 Meu Portfólio de Projetos Python
 
-![Python](https://img.shields.io/badge/Python-3.11+-blue?style=for-the-badge&logo=python)
-![Flask](https://img.shields.io/badge/Flask-Backend-black?style=for-the-badge&logo=flask)
-![WhatsApp](https://img.shields.io/badge/WhatsApp-Business_API-25D366?style=for-the-badge&logo=whatsapp)
-![Google Calendar](https://img.shields.io/badge/Google-Calendar_API-4285F4?style=for-the-badge&logo=googlecalendar)
-![VS Code](https://img.shields.io/badge/VS_Code-IDE-007ACC?style=for-the-badge&logo=visualstudiocode)
+Repositório com projetos desenvolvidos para praticar programação back-end, Programação Orientada a Objetos (POO), automação e integração com banco de dados.
 
 ---
 
-# 📌 Overview
+# 📌 Projeto Adicionado
 
-Barber Academy is a scalable automation platform developed to modernize customer service and scheduling workflows for barbershops and barber schools.
+## Sistema de Usuários com SQLAlchemy e POO
 
-The system integrates:
+Projeto desenvolvido em Python utilizando Programação Orientada a Objetos (POO) e SQLAlchemy para integração com banco de dados SQLite.
 
-- WhatsApp Business API
-- Google Calendar API
-- Automated scheduling workflows
-- Reminder systems
-- Customer support automation
-- Course lead generation
+### Funcionalidades
 
-This project was designed as a real-world backend automation solution inspired by modern SaaS architectures.
+O sistema possui três tipos de usuários:
 
----
+### 👤 Usuário
+- Pode ser cadastrado no banco de dados.
 
-# 🚀 Main Features
+### 🧑‍💼 Gestor
+- Herda funcionalidades da classe Usuário.
+- Pode listar todos os usuários cadastrados.
 
-## 📲 WhatsApp Automation
-
-- Interactive chatbot
-- Automated customer service
-- Human support redirection
-- Dynamic service menus
-- Automated responses
+### 👨‍💻 Administrador
+- Herda funcionalidades da classe Gestor.
+- Pode deletar usuários do banco de dados.
 
 ---
 
-## 📅 Smart Scheduling
+# 🧠 Conceitos aplicados
 
-- Appointment scheduling
-- Google Calendar synchronization
-- Time slot management
-- Real-time booking flow
+## Programação Orientada a Objetos
 
----
+### Herança
+As classes Gestor e Administrador herdam características da classe Usuario.
 
-## ⏰ Reminder System
+### Encapsulamento
+Cada classe possui responsabilidades separadas.
 
-- Automatic reminder notifications
-- Scheduled WhatsApp alerts
-- Attendance optimization
-- Customer engagement automation
+### Reutilização de código
+O uso de herança evita repetição de código.
 
 ---
 
-## 🎓 Lead Generation
+# 🛠️ Tecnologias utilizadas
 
-- Course presentation flow
-- Student acquisition automation
-- Service and pricing showcase
-- Conversion-oriented chatbot flow
-
----
-
-# 🧠 System Architecture
-
-```text
-Customer
-   ↓
-WhatsApp Business API
-   ↓
-Flask Webhook Server
-   ↓
-Python Backend Logic
-   ↓
-Google Calendar API
-   ↓
-Reminder & Scheduling System
-```
+- Python
+- SQLAlchemy
+- SQLite
+- Programação Orientada a Objetos (POO)
 
 ---
 
-# 🛠️ Technologies Used
+# 🚀 Conhecimentos demonstrados
 
-| Technology | Purpose |
-|---|---|
-| Python | Backend logic |
-| Flask | Webhook server |
-| Requests | API communication |
-| WhatsApp Business API | Messaging integration |
-| Google Calendar API | Scheduling integration |
-| JSON | Data exchange |
-| HTTP | API requests |
-| Ngrok | Public webhook exposure |
-| VS Code | Development environment |
+Este projeto demonstra conhecimentos em:
+
+- Estruturação de sistemas em Python
+- Criação de banco de dados usando ORM
+- Uso do SQLAlchemy
+- CRUD básico
+- Manipulação de sessões no banco de dados
+- Organização de código
+- Classes e objetos
+- Herança entre classes
+- Integração entre Python e SQLite
 
 ---
 
-# 📂 Project Structure
+# ▶️ Como executar
+
+## Instalar dependências
 
 ```bash
-chatbot-barbearia/
-│
-├── app.py
-├── credenciais.json
-├── requirements.txt
-└── README.md
+pip install sqlalchemy
 ```
 
----
-
-# ⚙️ Installation
-
-## 1️⃣ Clone repository
+## Executar o sistema
 
 ```bash
-git clone https://github.com/MarcusPaulodev1/Meu-Portif-lio-.git
+python sistema_usuarios_sqlalchemy.py
 ```
 
 ---
 
-## 2️⃣ Open with VS Code
+# 🎯 Objetivo do projeto
 
-```bash
-code .
-```
+O objetivo deste projeto foi praticar os conceitos fundamentais de desenvolvimento back-end utilizando Python, banco de dados e Programação Orientada a Objetos, criando uma estrutura simples, organizada e fácil de entender.
 
 ---
 
-## 3️⃣ Create virtual environment
-
-```bash
-python -m venv .venv
-```
-
-Activate environment:
-
-### Windows
-
-```bash
-.venv\\Scripts\\activate
-```
-
-### Linux / Mac
-
-```bash
-source .venv/bin/activate
-```
-
----
-
-## 4️⃣ Install dependencies
-
-```bash
-pip install flask requests
-pip install google-api-python-client
-pip install google-auth-httplib2
-pip install google-auth-oauthlib
-```
-
----
-
-# 🔑 API Configuration
-
-## WhatsApp Business API
-
-Configure inside:
-
-```python
-TOKEN_DE_ACESSO = "SEU_TOKEN"
-ID_NUMERO = "SEU_PHONE_ID"
-```
-
-Meta Developers:
-
-https://developers.facebook.com/
-
----
-
-## Google Calendar API
-
-1. Create project on Google Cloud
-2. Enable Google Calendar API
-3. Create service account
-4. Download credentials JSON
-5. Rename file to:
-
-```bash
-credenciais.json
-```
-
----
-
-# ▶️ Running The Project
-
-## Start Flask server
-
-```bash
-python app.py
-```
-
-Expected output:
-
-```bash
-Running on http://127.0.0.1:5000
-```
-
----
-
-## Expose local server
-
-```bash
-ngrok http 5000
-```
-
-Example URL:
-
-```bash
-https://abc123.ngrok-free.app
-```
-
----
-
-# 🔗 Webhook Configuration
-
-Inside Meta Developers:
-
-```text
-WhatsApp → Configuration → Webhook
-```
-
-Webhook URL:
-
-```text
-https://SEU_NGROK/webhook
-```
-
----
-
-# 💬 Example Conversation
-
-```text
-👤 User:
-Oi
-
-🤖 Bot:
-👋 Bem-vindo à Barber Academy ✂️
-
-1️⃣ Agendar corte
-2️⃣ Conhecer cursos
-3️⃣ Ver preços
-4️⃣ Falar com atendente
-5️⃣ Endereço e horário
-```
-
----
-
-# 📈 Business Impact
-
-This project demonstrates:
-
-- Backend engineering
-- API integrations
-- Automation systems
-- Scheduling workflows
-- SaaS-oriented architecture
-- Real-world business applications
-- Customer service optimization
-
----
-
-# 🔥 Future Improvements
-
-- OpenAI integration
-- AI-powered conversations
-- Admin dashboard
-- CRM integration
-- Payment systems
-- Analytics dashboard
-- Database persistence
-- Multi-user management
-
----
-
-# 🎯 Target Market
-
-- Barbershops
-- Barber schools
-- Beauty salons
-- Clinics
-- Local businesses
-- Service companies
-
----
-
-# 👨‍💻 Author
+# 👨‍💻 Autor
 
 Marcus Paulo
 
-- Software Engineering Student
-- Python Automation Developer
-- Backend & API Integration Enthusiast
+- Estudante de Engenharia de Software
+- Desenvolvedor Python
+- Interesse em Back-end, APIs, IA e automação
 
 ## 🔗 LinkedIn
 
